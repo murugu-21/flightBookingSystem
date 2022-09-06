@@ -37,7 +37,7 @@ export const deleteFlight = async (req: Request, res: Response) => {
 export const getBookings = async (req: Request, res: Response) => {
     validationResult(req).throw()
     const { flightNo, date } = req.query
-    const operatorId = req.user?._id.toString()
+    const operatorId = req.user?._id
     if(!operatorId) throw new Error(tokenError.notFound);
     const flight = await getBookingsFromFlight(flightNo as string, date as string, operatorId)
     res.status(NO_CONTENT).send(flight)

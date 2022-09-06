@@ -8,7 +8,7 @@ export const postTicket = async (req: Request, res: Response) => {
     validationResult(req).throw()
     const { flightId } = req.params
     const { seats } = req.body
-    const userId = req.user?._id.toString()
+    const userId = req.user?._id
     if(!userId) throw new Error(tokenError.notFound);
     const ticketId = await createTicket(flightId, seats, userId)
     if (!ticketId)
@@ -18,7 +18,7 @@ export const postTicket = async (req: Request, res: Response) => {
 
 export const getTickets = async (req: Request, res: Response) => {
     validationResult(req).throw()
-    const userId = req.user?._id.toString()
+    const userId = req.user?._id
     if (!userId) throw new Error(tokenError.notFound)
     const tickets = await getBookingsOfUser(userId)
     if (tickets.length === 0)

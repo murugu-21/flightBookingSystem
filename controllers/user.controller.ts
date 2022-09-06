@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { validationResult } from 'express-validator'
-import { errorWrapper, userError } from '../errorResponse'
+import { errorWrapper, tokenError, userError } from '../errorResponse'
 import {
     comparePassword,
     createToken,
@@ -41,4 +41,11 @@ export const loginUser = async (req: Request, res: Response) => {
             type: user.type,
         })
     )
+}
+
+export const getUser = async (req: Request, res: Response) => {
+    validationResult(req).throw()
+    if (!req.user)
+        res.status(BAD_REQUEST).send(tokenError.invalid)
+    res.status(OK).send(req.user)
 }

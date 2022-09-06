@@ -1,4 +1,4 @@
-import { ReqUser } from './interface'
+import { ReqUser } from './interfaces'
 
 declare global {
     namespace NodeJS {
