@@ -8,6 +8,7 @@ export function SignUp() {
       name: null,
       email: null,
       password: null,
+      type: 'Customer'
     });
     if (localStorage.getItem('user')) {
         return navigate('/home')
@@ -36,12 +37,39 @@ export function SignUp() {
     return (
       <form>
         <label for="name">Name</label>
-            <input type="text" id="name" value={formDetails.name} onChange={handleChange}></input>
+        <input
+          type="text"
+          id="name"
+          value={formDetails.name}
+          onChange={handleChange}
+        ></input>
         <label for="email">Email</label>
-        <input type="email" id="email" value={formDetails.email} onChange={handleChange}></input>
+        <input
+          type="email"
+          id="email"
+          value={formDetails.email}
+          onChange={handleChange}
+        ></input>
         <label for="password">Password</label>
-        <input type="password" id="password" value={formDetails.password} onChange={handleChange}></input>
-        <input type='submit' onClick={handleSubmit}>submit</input>
+        <input
+          type="password"
+          id="password"
+          value={formDetails.password}
+          onChange={handleChange}
+        ></input>
+        <label for="type">Type of user</label>
+        <select
+          id="type"
+          name="type"
+          value={formDetails.type}
+          onChange={handleChange}
+        >
+          <option value="Customer">Customer</option>
+          <option value="Admin">Admin</option>
+        </select>
+        <input type="submit" onClick={handleSubmit}>
+          submit
+        </input>
       </form>
     );
 }
