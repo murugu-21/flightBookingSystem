@@ -20,7 +20,6 @@ loginRouter.post(
 
 loginRouter.get(
     '/',
-    body('token', 'api token required').notEmpty(),
     isAuthorised(),
     wrapAsync(getUser)
 )

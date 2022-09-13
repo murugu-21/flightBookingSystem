@@ -28,6 +28,6 @@ app.use(handleDatabaseError)
 app.use(handleDefaultError)
 
 // serve build of frontend in express
-app.use('/', express.static(path.join(__dirname, '../client/public')))
+app.use('/', express.static(path.join(__dirname, '../client/build')))
 
 export default app

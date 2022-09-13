@@ -17,7 +17,7 @@ export const registerUser = async (req: Request, res: Response) => {
     }
     const user = await createUser(email, name, password, type)
     res.status(CREATION_SUCCESSFULL).send(
-        createToken({
+        await createToken({
             _id: user._id.toString(),
             type: user.type,
         })
@@ -36,7 +36,7 @@ export const loginUser = async (req: Request, res: Response) => {
         return res.status(BAD_REQUEST).send(errorWrapper(userError.invalid))
     }
     res.status(CREATION_SUCCESSFULL).send(
-        createToken({
+        await createToken({
             _id: user._id.toString(),
             type: user.type,
         })

@@ -33,6 +33,7 @@ export interface Flight {
 }
 
 export interface ReqFlight {
+    operatorId: string
     flightNo: string
     from: string
     to: string
