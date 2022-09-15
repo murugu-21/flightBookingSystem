@@ -18,6 +18,7 @@ flightRouter.post(
     body('startDateTime').custom(isDateInFuture),
     body('endDateTime').custom(checkEndAfterStart),
     body('price', 'price of seat should be numeric').notEmpty().isNumeric(),
+    body('totalSeats').optional().isNumeric().isInt({ min: 1 }),
     wrapAsync(isFlightInInterval),
     wrapAsync(postFlight)
 )
