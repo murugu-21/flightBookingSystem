@@ -13,7 +13,7 @@ export const createFlight = async (flightDetails: ReqFlight) => {
 }
 
 export const removeFlight = async (_id: string) => {
-    await FlightModel.findByIdAndDelete(_id)
+    return await FlightModel.findOneAndDelete({ _id: new Types.ObjectId(_id), tickets: {$size: 0} })
 }
 
 export const getFlight = async (_id: string, operatorId: string) => {
@@ -43,10 +43,10 @@ export const getBookingsFromFlight = async (
             $lte: endDateTime,
         },
         operatorId: new Types.ObjectId(operatorId)
-    }).select('-seatsBooked')
+    })
 }
 
-export const searchFlight = async(
+export const searchFlights = async(
     startDateTime: string,
     endDateTime: string,
 ) => {
@@ -56,4 +56,16 @@ export const searchFlight = async(
             $lte: endDateTime,
         },
     }).select('-tickets')
+}
+
+export const getFlightInInterval = async (
+    flightNo: string,
+    startDateTime: string,
+    endDateTime: string
+) => {
+    return await FlightModel.findOne({
+        flightNo,
+        startDateTime: { $lte: endDateTime },
+        endDateTime: { $gte: startDateTime },
+    })
 }

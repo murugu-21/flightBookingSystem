@@ -1,8 +1,19 @@
 import { NextFunction, Request, Response } from 'express'
 import { errorWrapper, flightError, tokenError } from '../errorResponse'
-import { getFlight } from '../services/flight.service'
+import { getFlight, getFlightInInterval } from '../services/flight.service'
 import { BAD_REQUEST, NOT_FOUND } from '../statusCodes'
-import { isDateInFuture } from '../utils/date'
+
+export const isFlightInInterval = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const { flightNo, startDateTime, endDateTime } = req.body
+    if (await getFlightInInterval(flightNo, startDateTime, endDateTime))
+        return res.status(BAD_REQUEST).send(errorWrapper(flightError.interval))
+    next()
+}
+
 export const canDeleteFlight = async (
     req: Request,
     res: Response,
@@ -14,7 +25,9 @@ export const canDeleteFlight = async (
     const flight = await getFlight(_id, operatorId)
     if (!flight)
         return res.status(NOT_FOUND).send(errorWrapper(flightError.notFound))
-    if (!isDateInFuture(flight.startDateTime.toISOString()))
+    const now = new Date()
+    console.log(flight.startDateTime.toISOString())
+    if (flight.startDateTime < now)
         return res.status(BAD_REQUEST).send(errorWrapper(flightError.inPast))
     next()
 }

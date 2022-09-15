@@ -3,6 +3,7 @@ import { Request } from 'express-validator/src/base'
 export const isDate = (value: string) => {
     if (!/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/.test(value))
         throw new Error('Date must be in YYYY-MM-DDTHH:MN:SSZ format')
+    return true
 } 
 
 export const isDateInFuture = (value: string) => {

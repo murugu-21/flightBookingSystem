@@ -7,7 +7,7 @@ export const isFlightInFututre = async (
     res: Response,
     next: NextFunction
 ) => {
-    const { flightId } = req.params
+    const { flightId } = req.body
     const flight = await getFlightInFuture(flightId)
     if (!flight)
         return res.status(BAD_REQUEST).send(errorWrapper(flightError.inPast))

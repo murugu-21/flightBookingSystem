@@ -3,7 +3,7 @@ import { body, param, query } from 'express-validator'
 import { deleteFlight, getBookings, postFlight, searchFlightFromDate } from '../../controllers/flight.controller'
 import { isAuthorised } from '../../middleware/auth.middleware'
 import checkObjectIdMiddleware from '../../middleware/checkObjectId.middleware'
-import { canDeleteFlight } from '../../middleware/flight.middleware'
+import { canDeleteFlight, isFlightInInterval } from '../../middleware/flight.middleware'
 import { isDateInFuture, checkEndAfterStart, isDate } from '../../utils/date'
 import wrapAsync from '../../utils/wrapAsync'
 
@@ -18,13 +18,13 @@ flightRouter.post(
     body('startDateTime').custom(isDateInFuture),
     body('endDateTime').custom(checkEndAfterStart),
     body('price', 'price of seat should be numeric').notEmpty().isNumeric(),
+    wrapAsync(isFlightInInterval),
     wrapAsync(postFlight)
 )
 
 flightRouter.delete(
     '/:_id',
     isAuthorised('Admin'),
-    param('_id', 'id should be specified in url params').notEmpty(),
     checkObjectIdMiddleware('_id'),
     wrapAsync(canDeleteFlight),
     wrapAsync(deleteFlight)
@@ -32,7 +32,7 @@ flightRouter.delete(
 
 flightRouter.get(
     '/',
-    isAuthorised('Customer'),
+    isAuthorised('Admin'),
     query('flightNo', 'flight number should be defined').notEmpty(),
     query('date').custom(isDate),
     wrapAsync(getBookings)

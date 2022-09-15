@@ -1,5 +1,5 @@
 import express, { Express, json } from 'express'
-import path from 'path'
+import cors from 'cors'
 import {
     handleDatabaseError,
     handleDefaultError,
@@ -15,6 +15,9 @@ const app: Express = express()
 // init middleware for express validator to be able to intercept request
 app.use(json())
 
+if (process.env.NODE_ENV === 'development')
+    app.use(cors())
+
 // Define Routes
 app.use('/api/user', userRouter)
 app.use('/api/auth', loginRouter)
@@ -28,6 +31,6 @@ app.use(handleDatabaseError)
 app.use(handleDefaultError)
 
 // serve build of frontend in express
-app.use('/', express.static(path.join(__dirname, '../client/build')))
+app.use(express.static('/client/build'))
 
 export default app

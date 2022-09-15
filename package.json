@@ -8,26 +8,28 @@
   },
   "main": "dist/server.js",
   "scripts": {
+    "postinstall": "yarn --cwd client",
     "prebuild": "npm tsc",
-    "build": "npm run build --prefix client",
+    "build": "yarn --cwd client build",
     "start": "node dist/server",
     "server": "concurrently \"npx tsc --watch\" \"nodemon -q dist/server.js\"",
-    "client": "npm start --prefix client",
-    "dev": "concurrently \"npx run server\" \"npm run client\""
+    "client": "yarn --cwd client start",
+    "dev": "concurrently \"yarn server\" \"yarn client\""
   },
   "keywords": [],
   "author": "Murugappan m",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "express-validator": "^6.14.2",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.5.1",
-    "react-router-dom": "^6.3.0"
+    "mongoose": "^6.5.1"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.12",
     "@types/bcryptjs": "^2.4.2",
     "@types/express": "^4.17.13",
     "@types/jest": "^28.1.7",

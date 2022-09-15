@@ -6,8 +6,7 @@ import { BAD_REQUEST, CREATION_SUCCESSFULL, OK } from '../statusCodes'
 
 export const postTicket = async (req: Request, res: Response) => {
     validationResult(req).throw()
-    const { flightId } = req.params
-    const { seats } = req.body
+    const { flightId, seats } = req.body
     const userId = req.user?._id
     if(!userId) throw new Error(tokenError.notFound);
     const ticketId = await createTicket(flightId, seats, userId)
@@ -22,6 +21,6 @@ export const getTickets = async (req: Request, res: Response) => {
     if (!userId) throw new Error(tokenError.notFound)
     const tickets = await getBookingsOfUser(userId)
     if (tickets.length === 0)
-        return res.status(BAD_REQUEST).send(ticketError.notFound)
+        return res.status(BAD_REQUEST).send(ticketError.empty)
     res.status(OK).send(tickets)
 }

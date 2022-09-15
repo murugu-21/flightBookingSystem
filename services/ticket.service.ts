@@ -8,9 +8,12 @@ export const createTicket = async (
     userId: string 
 ) => {
     const ticket = new TicketModel(
-        new Types.ObjectId(userId),
-        seats
+        {
+            userId: new Types.ObjectId(userId),
+            seats
+        }
     )
+    console.log({...ticket})
     const updatedFlight = await FlightModel.findOneAndUpdate({
         _id: new Types.ObjectId(flightId),
         availableSeats: {$gte: seats}
@@ -37,7 +40,6 @@ export const getBookingsOfUser = async (userId: string) => {
                 to: 1,
                 startDateTime: 1,
                 endDateTime: 1,
-                totalSeats: 1,
                 seats: '$tickets.seats',
             },
         },

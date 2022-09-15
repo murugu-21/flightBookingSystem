@@ -31,7 +31,7 @@ userRouter.post(
     ),
     body('type').custom((value) => {
         if (!['Customer', 'Admin'].includes(value))
-            return Promise.reject('Please enter type as Customer or Operator')
+            return Promise.reject('Please enter type as Customer or Admin')
         return Promise.resolve()
     }),
     wrapAsync(registerUser)

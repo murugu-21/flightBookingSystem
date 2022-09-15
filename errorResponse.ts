@@ -16,10 +16,13 @@ export const tokenError = {
 
 export const flightError = {
     notFound: 'flight not found',
-    inPast: 'flight in past and cannot be deleted'
+    empty: 'no flights found',
+    inPast: 'flight in past and cannot be deleted',
+    interval: 'flight is booked in interval',
+    booked: 'flight has tickets booked and cannot be deleted'
 }
 
 export const ticketError = {
     booked: 'requested no of seats booked',
-    notFound: 'no booking by you'
+    empty: 'no bookings by you'
 }
