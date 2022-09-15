@@ -4,8 +4,8 @@ import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
-import { useAppDispatch } from '../../app/hooks'
-import { logout } from '../login/authSlice'
+import { useAppDispatch } from '../app/hooks'
+import { logout } from '../features/login/authSlice'
 import { useNavigate } from 'react-router-dom'
 
 export default function NavBar() {
@@ -23,7 +23,7 @@ export default function NavBar() {
                     </Button>
                     <Typography sx={{ flexGrow: 1 }}>
                         <Button color="inherit" onClick={() => navigate('/')}>
-                            Red Bus
+                            Flight Booking System
                         </Button>
                     </Typography>
                     <Button color="inherit" onClick={(e) => dispatch(logout())}>

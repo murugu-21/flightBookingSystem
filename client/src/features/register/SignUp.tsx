@@ -3,7 +3,6 @@ import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import CssBaseline from '@mui/material/CssBaseline'
 import TextField from '@mui/material/TextField'
-import Link from '@mui/material/Link'
 import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
@@ -16,31 +15,45 @@ import {
     InputLabel,
     MenuItem,
     Select,
+    SelectChangeEvent,
 } from '@mui/material'
 import { NavLink, Navigate, useLocation } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
-import { registerUser, selectAuth } from '../login/authSlice'
-import Alerts from '../alert/Alerts'
+import { selectAuth } from '../login/authSlice'
+import Alerts from '../../components/alert/Alerts'
 import { Copyright } from '../login/SignIn'
+import {
+    registerUser,
+    selectRegister,
+    setEmail,
+    setName,
+    setPassword,
+    setType,
+} from './registerSlice'
+import Password from '../../components/Password'
 
 const theme = createTheme()
 
 export default function SignUp() {
     const location = useLocation()
-    const [type, setType] = React.useState('Customer')
     const { user, errors, isLoading } = useAppSelector(selectAuth)
     const dispatch = useAppDispatch()
+    const { name, email, password, type } = useAppSelector(selectRegister)
+    const changeName = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => dispatch(setName(e.target.value))
+    const changeEmail = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => dispatch(setEmail(e.target.value))
+    const changePassword = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => dispatch(setPassword(e.target.value))
+    const changeType = (e: SelectChangeEvent<string | File | null>) =>
+        dispatch(setType(e.target.value as string))
     if (user) return <Navigate to={location.state || '/'} replace />
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        const data = new FormData(event.currentTarget)
-        const body = {
-            name: data.get('name'),
-            email: data.get('email'),
-            password: data.get('password'),
-            type: data.get('type'),
-        }
-        dispatch(registerUser(body))
+        dispatch(registerUser())
     }
 
     return (
@@ -71,8 +84,8 @@ export default function SignUp() {
                             <Grid item xs={12}>
                                 <TextField
                                     autoComplete="given-name"
-                                    name="name"
-                                    required
+                                    value={name}
+                                    onChange={changeName}
                                     fullWidth
                                     id="name"
                                     label="Full Name"
@@ -83,20 +96,16 @@ export default function SignUp() {
                                 <TextField
                                     required
                                     fullWidth
-                                    id="email"
+                                    value={email}
+                                    onChange={changeEmail}
                                     label="Email Address"
-                                    name="email"
                                     autoComplete="email"
                                 />
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField
-                                    required
-                                    fullWidth
-                                    name="password"
-                                    label="Password"
-                                    type="password"
-                                    id="password"
+                                <Password
+                                    password={password}
+                                    changePassword={changePassword}
                                     autoComplete="new-password"
                                 />
                             </Grid>
@@ -111,9 +120,7 @@ export default function SignUp() {
                                         name="type"
                                         label="Type"
                                         value={type}
-                                        onChange={(e) => {
-                                            setType(e.target.value)
-                                        }}
+                                        onChange={(e) => changeType(e)}
                                     >
                                         <MenuItem value={'Customer'}>
                                             Customer
@@ -125,7 +132,9 @@ export default function SignUp() {
                                 </FormControl>
                             </Grid>
                         </Grid>
-                        {!isLoading && (
+                        {isLoading ? (
+                            <CircularProgress />
+                        ) : (
                             <Button
                                 type="submit"
                                 fullWidth
@@ -135,7 +144,6 @@ export default function SignUp() {
                                 Sign Up
                             </Button>
                         )}
-                        {isLoading && <CircularProgress />}
                         <Grid container justifyContent="flex-end">
                             <Grid item>
                                 <NavLink to="/signin">

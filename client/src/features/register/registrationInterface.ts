@@ -1,6 +1,6 @@
 export interface registerBody {
-    email: FormDataEntryValue | null
-    password: FormDataEntryValue | null
-    name: FormDataEntryValue | null
-    type: FormDataEntryValue | null
+    email: FormDataEntryValue
+    password: FormDataEntryValue
+    name: FormDataEntryValue
+    type: FormDataEntryValue
 }

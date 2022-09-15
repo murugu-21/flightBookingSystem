@@ -1,12 +1,12 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit'
 import { AxiosError } from 'axios'
 import { RootState } from '../../app/store'
-import { registerUserApi } from '../register/registerAPI'
-import { getUserApi, loginUserApi } from './authAPI'
-import { AuthState, loginBody } from './authInterface'
-import { Error } from '../alert/alertInterface'
-import { registerBody } from '../register/registrationInterface'
+import { getUserApi } from './authAPI'
+import { AuthState } from './authInterface'
+import { Error } from '../../components/alert/alertInterface'
 import api from '../../utils/api'
+import { loginUser } from './loginSlice'
+import { registerUser } from '../register/registerSlice'
 
 const initialState: AuthState = {
     user: null,
@@ -14,43 +14,14 @@ const initialState: AuthState = {
     errors: null,
 }
 
-export const loginUser = createAsyncThunk(
-    'auth/loginUser',
-    async (body: loginBody, { rejectWithValue }) => {
-        try {
-            const { user } = await loginUserApi(body)
-            return { user, isSave: body.isSave }
-        } catch (err: unknown) {
-            if (!(err instanceof AxiosError) || !err.response) {
-                throw err
-            }
-            return rejectWithValue(err.response.data.errors)
-        }
-    }
-)
-
 export const fetchUser = createAsyncThunk(
     'auth/fetchUser',
     async (token: string, { rejectWithValue }) => {
         try {
             api.defaults.headers.common['x-auth-token'] = token
+            sessionStorage.setItem('token', token)
             const user = await getUserApi()
-            return { user, token }
-        } catch (err: unknown) {
-            if (!(err instanceof AxiosError) || !err.response) {
-                throw err
-            }
-            return rejectWithValue(err.response.data.errors)
-        }
-    }
-)
-
-export const registerUser = createAsyncThunk(
-    'auth/registerUser',
-    async (body: registerBody, { rejectWithValue }) => {
-        try {
-            const { user } = await registerUserApi(body)
-            return { user }
+            return user
         } catch (err: unknown) {
             if (!(err instanceof AxiosError) || !err.response) {
                 throw err
@@ -67,44 +38,38 @@ export const authSlice = createSlice({
         logout: (state) => {
             state.user = null
             delete api.defaults.headers.common['x-auth-token']
+            if (sessionStorage.getItem('token'))
+                sessionStorage.removeItem('token')
             if (localStorage.getItem('token')) localStorage.removeItem('token')
         },
     },
     extraReducers: (builder) => {
         builder
-            .addCase(loginUser.pending, (state) => {
-                return { ...initialState, isLoading: true }
-            })
-            .addCase(loginUser.fulfilled, (state, action) => {
-                state.isLoading = false
-                state.user = action.payload.user
-            })
-            .addCase(loginUser.rejected, (state, action) => {
-                state.isLoading = false
-                state.errors = action.payload as Error[]
-            })
-            .addCase(fetchUser.pending, (state) => {
-                return { ...initialState, isLoading: true }
-            })
             .addCase(fetchUser.fulfilled, (state, action) => {
                 state.isLoading = false
-                state.user = action.payload.user
+                state.user = action.payload
             })
-            .addCase(fetchUser.rejected, (state, action) => {
-                state.isLoading = false
-                state.errors = action.payload as Error[]
-            })
-            .addCase(registerUser.pending, (state) => {
-                return { ...initialState, isLoading: true }
-            })
-            .addCase(registerUser.fulfilled, (state, action) => {
-                state.isLoading = false
-                state.user = action.payload.user
-            })
-            .addCase(registerUser.rejected, (state, action) => {
-                state.isLoading = false
-                state.errors = action.payload as Error[]
-            })
+            .addMatcher(
+                isAnyOf(
+                    loginUser.pending,
+                    registerUser.pending,
+                    fetchUser.pending
+                ),
+                () => {
+                    return { ...initialState, isLoading: true }
+                }
+            )
+            .addMatcher(
+                isAnyOf(
+                    loginUser.rejected,
+                    registerUser.rejected,
+                    fetchUser.rejected
+                ),
+                (state, action) => {
+                    state.isLoading = false
+                    state.errors = action.payload as Error[]
+                }
+            )
     },
 })
 

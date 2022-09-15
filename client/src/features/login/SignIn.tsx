@@ -14,9 +14,17 @@ import Container from '@mui/material/Container'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { Navigate, NavLink, useLocation } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
-import { loginUser, selectAuth } from './authSlice'
-import Alerts from '../alert/Alerts'
+import { selectAuth } from './authSlice'
+import Alerts from '../../components/alert/Alerts'
 import CircularProgress from '@mui/material/CircularProgress'
+import {
+    loginUser,
+    selectLogin,
+    setLoginEmail,
+    setLoginIsSave,
+    setLoginPassword,
+} from './loginSlice'
+import Password from '../../components/Password'
 
 export function Copyright(props: any) {
     return (
@@ -42,16 +50,19 @@ export default function SignIn() {
     const location = useLocation()
     const dispatch = useAppDispatch()
     const { user, errors, isLoading } = useAppSelector(selectAuth)
+    const { email, password, isSave } = useAppSelector(selectLogin)
+    const changeEmail = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => dispatch(setLoginEmail(e.target.value))
+    const changePassword = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => dispatch(setLoginPassword(e.target.value))
+    const changeIsSave = (e: React.ChangeEvent<HTMLInputElement>) =>
+        dispatch(setLoginIsSave(e.target.checked))
     if (user) return <Navigate to={location.state || '/'} replace />
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        const data = new FormData(event.currentTarget)
-        const body = {
-            email: data.get('email'),
-            password: data.get('password'),
-            isSave: data.get('remember'),
-        }
-        dispatch(loginUser(body))
+        dispatch(loginUser())
     }
 
     return (
@@ -80,36 +91,32 @@ export default function SignIn() {
                     >
                         <TextField
                             margin="normal"
+                            value={email}
+                            onChange={changeEmail}
                             required
                             fullWidth
-                            id="email"
                             label="Email Address"
-                            name="email"
                             autoComplete="email"
                             autoFocus
                         />
-                        <TextField
-                            margin="normal"
-                            required
-                            fullWidth
-                            name="password"
-                            label="Password"
-                            type="password"
-                            id="password"
+                        <Password
+                            password={password}
+                            changePassword={changePassword}
                             autoComplete="current-password"
                         />
                         <FormControlLabel
                             control={
                                 <Checkbox
-                                    value={true}
+                                    checked={isSave}
                                     color="primary"
-                                    name="remember"
-                                    id="remember"
+                                    onChange={changeIsSave}
                                 />
                             }
                             label="Remember me"
                         />
-                        {!isLoading && (
+                        {isLoading ? (
+                            <CircularProgress />
+                        ) : (
                             <Button
                                 type="submit"
                                 fullWidth
@@ -119,7 +126,6 @@ export default function SignIn() {
                                 Sign In
                             </Button>
                         )}
-                        {isLoading && <CircularProgress />}
                         <Grid container justifyContent="flex-end">
                             <Grid item>
                                 <NavLink to="/signup">

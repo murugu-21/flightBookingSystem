@@ -1,6 +1,6 @@
-import { Error } from '../alert/alertInterface'
+import { Error } from '../../components/alert/alertInterface'
 
-export interface UserState {
+export interface User {
     _id: string
     name: string
     email: string
@@ -8,19 +8,19 @@ export interface UserState {
 }
 
 export interface AuthState {
-    user: UserState | null
+    user: User | null
     isLoading: boolean
     errors: Error[] | null
 }
 
 export interface loginBody {
-    email: FormDataEntryValue | null
-    password: FormDataEntryValue | null
-    isSave: FormDataEntryValue | null
+    email: FormDataEntryValue
+    password: FormDataEntryValue
+    isSave: boolean
 }
 
 export interface AuthPayload {
-    user?: UserState | null
+    user?: User | null
     token?: string | null
     errors?: Error[]
 }
